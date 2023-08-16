@@ -3,6 +3,10 @@ package com.denkishop.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.denkishop.security.JwtRequest;
+import com.denkishop.mySecurity.AuthRequest;
+import com.denkishop.mySecurity.JwtService;
 
-import jakarta.servlet.http.HttpServletRequest;
+
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -24,13 +29,34 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private JwtService jwtService;
 
-	@PostMapping("login")
-	public ResponseEntity<?> login(HttpServletRequest request, @RequestBody JwtRequest loginrequest) {
-		// System.err.println("############### login IN !###################");
-		return new ResponseEntity<>(userService.authLogin(request, loginrequest), HttpStatus.OK);
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+	
+    @PostMapping("/login")
+    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+        if (authentication.isAuthenticated()) {
+        	//System.err.println("User check "+authRequest.getUsername()); ///out put ok reached
+            return jwtService.generateToken(authRequest.getUsername());
+        } else {
+            throw new UsernameNotFoundException("invalid user request !");
+        }
+
+
+    }
+
+	@PostMapping("/new")
+	public ResponseEntity<User> createUser(@RequestBody User user) {
+		User createdUser = userService.createUser(user);
+		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
 	}
-
+	
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@PathVariable Long id) {
 		User user = userService.getUserById(id);
@@ -41,11 +67,7 @@ public class UserController {
 		}
 	}
 
-	@PostMapping
-	public ResponseEntity<User> createUser(@RequestBody User user) {
-		User createdUser = userService.createUser(user);
-		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-	}
+
 
 	@PutMapping("/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {

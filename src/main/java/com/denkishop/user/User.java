@@ -2,11 +2,14 @@ package com.denkishop.user;
 
 import java.util.Collection;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,7 +18,7 @@ import jakarta.persistence.Id;
 @Entity
 @DynamicInsert 
 @DynamicUpdate 
-public class User implements UserDetails{
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,17 +27,45 @@ public class User implements UserDetails{
     private String username;
     private String password;
     private String role;
+	@NotBlank
+	@Size(max = 100)
+	@Email
+	@Column(unique = true)
+	private String email;
+	private boolean active;
 
     public User() {
     }
 
-    public User(String username, String password, String role) {
+    public User(String username, String password, String role, @NotBlank @Size(max = 100) @Email String email,
+			boolean active) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.role = role;
+		this.email = email;
+		this.active = active;
+	}
+
+	public User(String username, String password, String role) {
         this.username = username;
         this.password = password;
         this.role = role;
     }
+    
 
-    public Long getId() {
+    public User(Long id, String username, String password, String role, @NotBlank @Size(max = 100) @Email String email,
+			boolean active) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.role = role;
+		this.email = email;
+		this.active = active;
+	}
+
+	public Long getId() {
         return id;
     }
 
@@ -54,50 +85,33 @@ public class User implements UserDetails{
         return role;
     }
 
-    public void setRole(String role) {
+    public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setRole(String role) {
         this.role = role;
     }
+    
 
-	@Override
-	public boolean isAccountNonExpired() {
-		// TODO Auto-generated method stub
-		return false;
+	public String getEmail() {
+		return email;
 	}
 
-	@Override
-	public boolean isAccountNonLocked() {
-		// TODO Auto-generated method stub
-		return false;
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isActive() {
+		return active;
 	}
 
-	@Override
-	public boolean isEnabled() {
-		// TODO Auto-generated method stub
-		return false;
+	public void setActive(boolean active) {
+		this.active = active;
 	}
-	
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Return a list of user roles/authorities here
-        // For example, you can return a list of SimpleGrantedAuthority instances
-        // based on the user's roles or permissions
-        return null;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
 }
 

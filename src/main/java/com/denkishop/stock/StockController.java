@@ -16,14 +16,14 @@ import java.util.Optional;
 @RequestMapping("/stocks")
 public class StockController {
 
-    private final StockService stockService;
+   
 
     @Autowired
     ProductService productService;
+    
+    @Autowired
+    private StockService stockService;
   
-    public StockController(StockService stockService) {
-        this.stockService = stockService;
-    }
 
     @GetMapping
     public List<Stock> getAllStocks() {

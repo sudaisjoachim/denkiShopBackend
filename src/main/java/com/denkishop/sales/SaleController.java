@@ -19,13 +19,11 @@ public class SaleController {
 	@Autowired
 	ProductService productService;
 
-	private final SaleService saleService;
+	@Autowired
+	private SaleService saleService;
 
-	public SaleController(SaleService saleService) {
-		this.saleService = saleService;
-	}
 
-	@GetMapping
+	@GetMapping("/all")
 	public List<Sale> getAllSales() {
 		return saleService.getAllSales();
 	}
