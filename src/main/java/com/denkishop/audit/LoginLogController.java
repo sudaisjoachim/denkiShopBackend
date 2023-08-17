@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/login-log")
+@RequestMapping("/audit")
 public class LoginLogController {
 
 	@Autowired
@@ -30,8 +30,13 @@ public class LoginLogController {
 
 	@GetMapping("/all")
 	public ResponseEntity<List<LoginLog>> getAllLoginLogs() {
-		List<LoginLog> loginLogs = loginLogService.getAllLoginLogs();
-		return ResponseEntity.ok(loginLogs);
+	    List<LoginLog> loginLogs = loginLogService.getAllLoginLogs();
+	    
+	    if (loginLogs.isEmpty()) {
+	        return ResponseEntity.notFound().build();
+	    } else {
+	        return ResponseEntity.ok(loginLogs);
+	    }
 	}
 
 	@PostMapping("/new")

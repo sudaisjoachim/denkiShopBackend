@@ -56,6 +56,8 @@ public class SecurityConfig {
 					.requestMatchers("/products/**").authenticated()
 					.requestMatchers("/sales/**").authenticated()
 					.requestMatchers("/stocks/**").authenticated()
+					.requestMatchers("/audit/**").authenticated()
+					.requestMatchers("/actuator/**").authenticated()
 					.anyRequest().authenticated().and().httpBasic();
 			http.addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 
