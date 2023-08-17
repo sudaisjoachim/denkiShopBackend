@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.denkishop.product.Product;
 import com.denkishop.product.ProductService;
+import com.denkishop.utils.ResourceResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,6 @@ public class SaleController {
 	@Autowired
 	private SaleService saleService;
 
-
 	@GetMapping("/all")
 	public List<Sale> getAllSales() {
 		return saleService.getAllSales();
@@ -34,7 +34,7 @@ public class SaleController {
 		return sale.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
-	@PostMapping("/")
+	@PostMapping("/new")
 	public ResponseEntity<Sale> createSale(@RequestBody Sale sale) {
 		Long productId = sale.getProduct().getId();
 		Product product = productService.getProductById(productId); // Fetch the associated product
@@ -43,6 +43,22 @@ public class SaleController {
 		Sale savedSale = saleService.saveSale(sale);
 		return ResponseEntity.status(HttpStatus.CREATED).body(savedSale);
 	}
+
+	@PutMapping("/update/{id}")
+	public ResponseEntity<ResourceResponse<Sale>> updateSale(@PathVariable Long id, @RequestBody Sale sale) {
+	    Optional<Sale> existingSale = saleService.getSaleById(id);
+	    if (existingSale.isPresent()) {
+	        Sale updatedSale = saleService.updateSale(existingSale, sale);
+	        String message = "Sale with ID " + id + " updated successfully!";
+	        ResourceResponse<Sale> resourceResponse = new ResourceResponse<>(updatedSale, message);
+	        return ResponseEntity.ok(resourceResponse);
+	    } else {
+	        String errorMessage = "Associated Sale id : " + id + " not found!";
+	        ResourceResponse<Sale> errorResponse = new ResourceResponse<>(null, errorMessage);
+	        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+	    }
+	}
+
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteSale(@PathVariable Long id) {

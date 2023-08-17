@@ -1,6 +1,7 @@
 package com.denkishop.user;
 
-import java.util.Collection;
+
+import java.util.Date;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -14,6 +15,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @DynamicInsert 
@@ -33,6 +36,11 @@ public class User {
 	@Column(unique = true)
 	private String email;
 	private boolean active;
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date created_at;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date updated_at;
 
     public User() {
     }
@@ -113,5 +121,23 @@ public class User {
 	public void setActive(boolean active) {
 		this.active = active;
 	}
+
+	public Date getCreated_at() {
+		return created_at;
+	}
+
+	public void setCreated_at(Date created_at) {
+		this.created_at = created_at;
+	}
+
+	public Date getUpdated_at() {
+		return updated_at;
+	}
+
+	public void setUpdated_at(Date updated_at) {
+		this.updated_at = updated_at;
+	}
+	
+	
 }
 

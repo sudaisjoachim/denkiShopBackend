@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.denkishop.mySecurity.AuthRequest;
 import com.denkishop.mySecurity.JwtService;
+import com.denkishop.utils.ResourceResponse;
 
 
 
@@ -42,21 +43,11 @@ public class UserController {
     public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
         if (authentication.isAuthenticated()) {
-        	//System.err.println("User check "+authRequest.getUsername()); ///out put ok reached
             return jwtService.generateToken(authRequest.getUsername());
         } else {
             throw new UsernameNotFoundException("invalid user request !");
         }
-
-
     }
-
-	@PostMapping("/new")
-	public ResponseEntity<User> createUser(@RequestBody User user) {
-		User createdUser = userService.createUser(user);
-		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
-	}
-	
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@PathVariable Long id) {
 		User user = userService.getUserById(id);
@@ -67,17 +58,18 @@ public class UserController {
 		}
 	}
 
-
-
-	@PutMapping("/{id}")
-	public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-		User updatedUser = userService.updateUser(id, user);
-		if (updatedUser != null) {
-			return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	@PostMapping("/new")
+	public ResponseEntity<User> createUser(@RequestBody User user) {
+		User createdUser = userService.createUser(user);
+		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
 	}
+	
+    @PutMapping("/{id}")
+    public ResponseEntity<ResourceResponse<User>> updateUser(@PathVariable Long id, @RequestBody User user) {
+        ResourceResponse<User> resourceResponse = userService.updateUser(id, user);
+        HttpStatus status = resourceResponse.getResource() != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+        return new ResponseEntity<>(resourceResponse, status);
+    }
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {

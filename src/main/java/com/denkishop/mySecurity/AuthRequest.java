@@ -11,16 +11,23 @@ public class AuthRequest {
 
     private String username ;
     private String password;
+ 
     
+	public AuthRequest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
     
 	public AuthRequest(String username, String password) {
 		super();
 		this.username = username;
 		this.password = password;
 	}
-	public AuthRequest() {
+	
+	public AuthRequest(String username, String password, String ipAddress, String securityChallenge) {
 		super();
-		// TODO Auto-generated constructor stub
+		this.username = username;
+		this.password = password;
 	}
 	public String getUsername() {
 		return username;
@@ -33,7 +40,6 @@ public class AuthRequest {
 	}
 	public void setPassword(String password) {
 		this.password = password;
-	}
-    
+	}	
     
 }

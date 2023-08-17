@@ -11,41 +11,57 @@ import java.util.Optional;
 @Service
 public class SaleService {
 
-    private final SaleRepository saleRepository;
+	private final SaleRepository saleRepository;
 
-  
-    public SaleService(SaleRepository saleRepository) {
-        this.saleRepository = saleRepository;
-    }
+	public SaleService(SaleRepository saleRepository) {
+		this.saleRepository = saleRepository;
+	}
 
-    public List<Sale> getAllSales() {
-        return saleRepository.findAll();
-    }
+	public List<Sale> getAllSales() {
+		return saleRepository.findAll();
+	}
 
-    public Optional<Sale> getSaleById(Long id) {
-        return saleRepository.findById(id);
-    }
+	public Optional<Sale> getSaleById(Long id) {
+		return saleRepository.findById(id);
+	}
 
-    public Sale saveSale(Sale sale) {
-    	  Date currentDate = new Date();
-          
-          if (sale.getId() == null) {
-              sale.setCreated_at(currentDate);
-          }
+	public Sale saveSale(Sale sale) {
+		Date currentDate = new Date();
+		sale.setUpdated_at(currentDate);
+		sale.setCreated_at(currentDate);
+		return saleRepository.save(sale);
+	}
 
-          sale.setUpdated_at(currentDate);
-          
-          return saleRepository.save(sale);
-    }
+	public Sale updateSale(Optional<Sale> existingSale, Sale updatedSaleData) {
+		Date currentDate = new Date();
+		existingSale.get().setUpdated_at(currentDate);
+		// Update specific fields based on the provided data
+		if (updatedSaleData.getName() != null) {
+			existingSale.get().setName(updatedSaleData.getName());
+		}
+		if (updatedSaleData.getPrice() != null) {
+			existingSale.get().setPrice(updatedSaleData.getPrice());
+		}
+		if (updatedSaleData.getQuantity() != null) {
+			existingSale.get().setQuantity(updatedSaleData.getQuantity());
+		}
+		if (updatedSaleData.getCost() != null) {
+			existingSale.get().setCost(updatedSaleData.getCost());
+		}
+		if (updatedSaleData.getSalePrice() != null) {
+			existingSale.get().setSalePrice(updatedSaleData.getSalePrice());
+		}
+		// Save the updated sale
+		return saleRepository.save(existingSale.get());
+	}
 
-    public void deleteSale(Long id) {
-        if (saleRepository.existsById(id)) {
-            saleRepository.deleteById(id);
-        } else {
-            // Handle case when the entity does not exist
-            throw new EntityNotFoundException("Sale with ID " + id + " not found");
-        }
-    }
+	public void deleteSale(Long id) {
+		if (saleRepository.existsById(id)) {
+			saleRepository.deleteById(id);
+		} else {
+			// Handle case when the entity does not exist
+			throw new EntityNotFoundException("Sale with ID " + id + " not found");
+		}
+	}
 
 }
-

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.denkishop.product.Product;
 import com.denkishop.product.ProductService;
+import com.denkishop.utils.ResourceResponse;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class StockController {
                     .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/")
+    @PostMapping("/new")
     public ResponseEntity<Stock> createStock(@RequestBody Stock stock) {
         Long productId = stock.getProduct().getId();
         Product product = productService.getProductById(productId); // Fetch the associated product
@@ -46,7 +47,14 @@ public class StockController {
         Stock savedStock = stockService.saveStock(stock);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedStock);
     }
-
+    
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ResourceResponse<Stock>> updateStock(@PathVariable Long id, @RequestBody Stock stock) {
+        Stock updatedStock = stockService.updateStock(id, stock);
+        String message = "Stock with ID " + id + " updated successfully!";
+        ResourceResponse<Stock> resourceResponse = new ResourceResponse<>(updatedStock, message);
+        return ResponseEntity.ok(resourceResponse);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteStock(@PathVariable Long id) {

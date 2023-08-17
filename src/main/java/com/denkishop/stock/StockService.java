@@ -26,10 +26,31 @@ public class StockService {
 	}
 
 	public Stock saveStock(Stock stock) {
-		stock.setCreated_at(new Date());
-		stock.setUpdated_at(new Date());
+		Date currentDate = new Date();
+		stock.setUpdated_at(currentDate);
+		stock.setCreated_at(currentDate);
 		return stockRepository.save(stock);
 	}
+	
+    public Stock updateStock(Long id, Stock updatedStock) {
+        Optional<Stock> existingStock = stockRepository.findById(id);
+        if (existingStock.isPresent()) {
+            Stock stockToUpdate = existingStock.get();
+
+            if (updatedStock.getProduct() != null) {
+                stockToUpdate.setProduct(updatedStock.getProduct());
+            }
+            if (updatedStock.getQuantity() != null) {
+                stockToUpdate.setQuantity(updatedStock.getQuantity());
+            }
+
+            stockToUpdate.setUpdated_at(new Date());
+
+            return stockRepository.save(stockToUpdate);
+        } else {
+            throw new EntityNotFoundException("Stock with ID " + id + " not found");
+        }
+    }
 
 	public void deleteStock(Long id) {
 	      if (stockRepository.existsById(id)) {
