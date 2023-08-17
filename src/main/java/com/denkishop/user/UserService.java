@@ -35,10 +35,11 @@ public class UserService {
 		user.setPassword(passwordEncoder.encode(user.getPassword()));
 		// Validate and set the role
 		if (user.getRole() != null && isValidRole(user.getRole())) {
-			user.setRole(user.getRole());
+		    user.setRole(user.getRole());
 		} else {
-			throw new IllegalArgumentException("Invalid role: " + user.getRole());
+		    throw new IllegalArgumentException("Invalid role: " + user.getRole());
 		}
+
 		return userRepository.save(user);
 	}
 
@@ -73,13 +74,24 @@ public class UserService {
 		userRepository.deleteById(id);
 	}
 
-	private boolean isValidRole(String role) {
-		for (RoleNames validRole : RoleNames.values()) {
-			if (validRole.name().equals(role)) {
-				return true;
-			}
-		}
-		return false;
+	private boolean isValidRole(String roles) {
+	    String[] roleArray = roles.split(",");
+	    for (String role : roleArray) {
+	        String trimmedRole = role.trim();
+	        boolean valid = false;
+	        for (RoleNames enumRole : RoleNames.values()) {
+	            if (enumRole.name().equals(trimmedRole)) {
+	                valid = true;
+	                break;
+	            }
+	        }
+	        if (!valid) {
+	            return false;
+	        }
+	    }
+	    return true;
 	}
+
+
 
 }

@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import com.denkishop.sales.Sale;
 import com.denkishop.sales.SaleRepository;
 
-import jakarta.persistence.EntityNotFoundException;
-
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -16,13 +14,9 @@ import java.util.Optional;
 public class ProductService {
 	
 	@Autowired
-	SaleRepository saleRepository ;
-
-    private final ProductRepository productRepository;
-
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+	private SaleRepository saleRepository ;
+	@Autowired
+	private ProductRepository productRepository;
 
     public List<Product> getAllProducts() {
         return productRepository.findAll();

@@ -20,16 +20,22 @@ public class StockController {
    
 
     @Autowired
-    ProductService productService;
+    private ProductService productService;
     
     @Autowired
     private StockService stockService;
   
-
-    @GetMapping
-    public List<Stock> getAllStocks() {
-        return stockService.getAllStocks();
+    @GetMapping("/all")
+    public ResponseEntity<List<Stock>> getAllStocks() {
+        List<Stock> stocks = stockService.getAllStocks();
+        
+        if (stocks.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(stocks);
+        }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Stock> getStockById(@PathVariable Long id) {

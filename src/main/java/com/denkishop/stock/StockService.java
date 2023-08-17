@@ -1,5 +1,6 @@
 package com.denkishop.stock;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -11,11 +12,8 @@ import java.util.Optional;
 @Service
 public class StockService {
 
-	private final StockRepository stockRepository;
-
-	public StockService(StockRepository stockRepository) {
-		this.stockRepository = stockRepository;
-	}
+	@Autowired
+	StockRepository stockRepository;
 
 	public List<Stock> getAllStocks() {
 		return stockRepository.findAll();

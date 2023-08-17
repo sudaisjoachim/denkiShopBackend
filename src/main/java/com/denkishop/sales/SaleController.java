@@ -18,16 +18,21 @@ import java.util.Optional;
 public class SaleController {
 
 	@Autowired
-	ProductService productService;
+	private ProductService productService;
 
 	@Autowired
 	private SaleService saleService;
 
 	@GetMapping("/all")
-	public List<Sale> getAllSales() {
-		return saleService.getAllSales();
+	public ResponseEntity<List<Sale>> getAllSales() {
+	    List<Sale> sales = saleService.getAllSales();
+	    
+	    if (sales.isEmpty()) {
+	        return ResponseEntity.notFound().build();
+	    } else {
+	        return ResponseEntity.ok(sales);
+	    }
 	}
-
 	@GetMapping("/{id}")
 	public ResponseEntity<Sale> getSaleById(@PathVariable Long id) {
 		Optional<Sale> sale = saleService.getSaleById(id);

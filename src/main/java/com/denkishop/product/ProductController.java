@@ -1,6 +1,8 @@
 package com.denkishop.product;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -11,20 +13,29 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    private final ProductService productService;
+   @Autowired
+   private ProductService productService;
 
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
-
-    @GetMapping("/")
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    @GetMapping("/all")
+    public ResponseEntity<List<Product>> getAllProducts() {
+        List<Product> products = productService.getAllProducts();
+        
+        if (products.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(products);
+        }
     }
 
     @GetMapping("/{id}")
-    public Product getProductById(@PathVariable Long id) {
-        return productService.getProductById(id);
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Product product = productService.getProductById(id);
+        
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(product);
+        }
     }
 
     @PostMapping("/")
