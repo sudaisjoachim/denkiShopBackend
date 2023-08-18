@@ -1,5 +1,7 @@
 package com.denkishop.user;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.denkishop.mySecurity.AuthRequest;
 import com.denkishop.mySecurity.JwtService;
+import com.denkishop.sales.Sale;
 import com.denkishop.utils.ResourceResponse;
-
-
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -29,28 +30,28 @@ import com.denkishop.utils.ResourceResponse;
 public class UserController {
 
 	@Autowired
-	private UserService userService;
-	
+	private UserService userService1;
+
 	@Autowired
-	private JwtService jwtService;
+	private JwtService jwtService1;
 
+	@Autowired
+	private AuthenticationManager authenticationManager1;
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+	@PostMapping("/login")
+	public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
+		Authentication authentication = authenticationManager1.authenticate(
+				new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
+		if (authentication.isAuthenticated()) {
+			return jwtService1.generateToken(authRequest.getUsername());
+		} else {
+			throw new UsernameNotFoundException("invalid user request !");
+		}
+	}
 
-	
-    @PostMapping("/login")
-    public String authenticateAndGetToken(@RequestBody AuthRequest authRequest) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getUsername(), authRequest.getPassword()));
-        if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(authRequest.getUsername());
-        } else {
-            throw new UsernameNotFoundException("invalid user request !");
-        }
-    }
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getUserById(@PathVariable Long id) {
-		User user = userService.getUserById(id);
+		User user = userService1.getUserById(id);
 		if (user != null) {
 			return new ResponseEntity<>(user, HttpStatus.OK);
 		} else {
@@ -58,22 +59,33 @@ public class UserController {
 		}
 	}
 
+	@GetMapping("/all")
+	public ResponseEntity<List<User>> getAllUsers() {
+		List<User> users = userService1.getAllUsers();
+
+		if (users.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		} else {
+			return ResponseEntity.ok(users);
+		}
+	}
+
 	@PostMapping("/new")
 	public ResponseEntity<User> createUser(@RequestBody User user) {
-		User createdUser = userService.createUser(user);
+		User createdUser = userService1.createUser(user);
 		return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
 	}
-	
-    @PutMapping("/{id}")
-    public ResponseEntity<ResourceResponse<User>> updateUser(@PathVariable Long id, @RequestBody User user) {
-        ResourceResponse<User> resourceResponse = userService.updateUser(id, user);
-        HttpStatus status = resourceResponse.getResource() != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
-        return new ResponseEntity<>(resourceResponse, status);
-    }
+
+	@PutMapping("/{id}")
+	public ResponseEntity<ResourceResponse<User>> updateUser(@PathVariable Long id, @RequestBody User user) {
+		ResourceResponse<User> resourceResponse = userService1.updateUser(id, user);
+		HttpStatus status = resourceResponse.getResource() != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
+		return new ResponseEntity<>(resourceResponse, status);
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-		userService.deleteUser(id);
+		userService1.deleteUser(id);
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 

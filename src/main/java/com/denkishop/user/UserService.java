@@ -1,6 +1,7 @@
 package com.denkishop.user;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,10 @@ public class UserService {
 
 	public User getUserById(Long id) {
 		return userRepository.findById(id).orElse(null);
+	}
+	
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
 	}
 
 	public Optional<User> getUserByUsername(String username) {

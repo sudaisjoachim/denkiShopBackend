@@ -1,12 +1,8 @@
 package com.denkishop.mySecurity;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class AuthRequest {
 
     private String username ;
@@ -23,12 +19,7 @@ public class AuthRequest {
 		this.username = username;
 		this.password = password;
 	}
-	
-	public AuthRequest(String username, String password, String ipAddress, String securityChallenge) {
-		super();
-		this.username = username;
-		this.password = password;
-	}
+
 	public String getUsername() {
 		return username;
 	}
